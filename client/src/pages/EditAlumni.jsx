@@ -1,10 +1,29 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAlumnus, updateAlumni } from "../api/alumniApi";
+import { useFlashMessage } from "../context/FlashMessageContext";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const EditAlumni = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { showSuccess, showError } = useFlashMessage();
+  const { user } = useContext(AuthContext);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      showError('Access denied. Admin privileges required.');
+      navigate('/dashboard');
+    }
+  }, [user, navigate, showError]);
+
+  // Don't render if not admin
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
+  
   const [alumni, setAlumni] = useState({
     name: "",
     rollNumber: "",
@@ -16,6 +35,8 @@ const EditAlumni = () => {
     phone: "",
     linkedin: "",
   });
+  
+  const [loading, setLoading] = useState(true);
 
   const fetchAlumni = async () => {
     try {
@@ -28,12 +49,15 @@ const EditAlumni = () => {
         department: data.department || "",
         batch: data.batch || "",
         company: data.company || "",
-        designation: res.data.designation || "",
-        phone: res.data.phone || "",
-        linkedin: res.data.linkedin || "",
+        designation: data.designation || "",
+        phone: data.phone || "",
+        linkedin: data.linkedin || "",
       });
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching alumni:", err);
+      showError("Failed to load alumni data");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,18 +103,25 @@ const EditAlumni = () => {
     try {
       const token = localStorage.getItem("token");
       await updateAlumni(id, alumni, token);
+      showSuccess("Alumni profile updated successfully!");
       navigate("/alumni");
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to update alumni");
+      showError(err.response?.data?.message || "Failed to update alumni");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Edit Alumni</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      {loading ? (
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading alumni data...</p>
+        </div>
+      ) : (
+        <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+          <h1 className="text-2xl font-bold mb-6 text-center">Edit Alumni</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
             <input
@@ -210,6 +241,7 @@ const EditAlumni = () => {
           </button>
         </form>
       </div>
+      )}
     </div>
   );
 };

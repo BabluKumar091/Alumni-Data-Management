@@ -10,14 +10,13 @@ const Register = () => {
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setEmailError("");
     setLoading(true);
-    
+
     // Frontend: enforce college email domain
     const collegeEmailRegex = /^[^\s@]+@jietjodhpur\.ac\.in$/i;
     if (!collegeEmailRegex.test(email.trim())) {
@@ -32,13 +31,7 @@ const Register = () => {
         navigate("/dashboard");
       }
     } catch (err) {
-      // Map backend invalid-domain response to friendly message
-      const msg = err.message || "Registration failed";
-      if (msg === 'Invalid email domain') {
-        setEmailError("Only JIET college email IDs are allowed.");
-      } else {
-        setError(msg);
-      }
+      // Flash messages will handle the error display
     } finally {
       setLoading(false);
     }
@@ -48,20 +41,6 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
-            {error === "User already exists with that email" ? (
-              <>
-                {error} <br />
-                <Link to="/login" className="underline font-semibold">
-                  Click here to login instead
-                </Link>
-              </>
-            ) : (
-              error
-            )}
-          </div>
-        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"

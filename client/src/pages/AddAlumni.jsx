@@ -1,9 +1,26 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { addAlumni } from "../api/alumniApi";
+import { useFlashMessage } from "../context/FlashMessageContext";
+import { AuthContext } from "../context/AuthContext";
 
 const AddAlumni = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useFlashMessage();
+  const { user } = useContext(AuthContext);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      showError('Access denied. Admin privileges required.');
+      navigate('/dashboard');
+    }
+  }, [user, navigate, showError]);
+
+  // Don't render if not admin
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
   const [alumni, setAlumni] = useState({
     name: "",
     rollNumber: "",
@@ -58,7 +75,7 @@ const AddAlumni = () => {
       const token = localStorage.getItem("token");
       const response = await addAlumni(alumni, token);
       console.log("Alumni added successfully:", response);
-      alert("Alumni added successfully!");
+      showSuccess("Alumni profile added successfully!");
       // Reset form
       setAlumni({ name: "", email: "", batch: "" });
       // Redirect to alumni list
@@ -66,7 +83,7 @@ const AddAlumni = () => {
     } catch (err) {
       console.error("Error adding alumni:", err);
       const msg = err.response?.data?.message || "Failed to add alumni";
-      setError(msg);
+      showError(msg);
     } finally {
       setLoading(false);
     }

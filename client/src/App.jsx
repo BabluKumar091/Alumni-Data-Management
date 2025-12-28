@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 
 // Pages
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -12,6 +13,7 @@ import AddAlumni from "./pages/AddAlumni";
 import EditAlumni from "./pages/EditAlumni";
 import ViewAlumni from "./pages/ViewAlumni";
 import AdminUsers from "./pages/AdminUsers";
+import AdminAlumni from "./pages/AdminAlumni";
 import AlumniProfile from "./pages/AlumniProfile";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
@@ -57,7 +59,7 @@ function App() {
             }
           />
           <Route
-            path="/add-alumni"
+            path="/alumni/add"
             element={
               <AdminRoute>
                 <AddAlumni />
@@ -65,19 +67,11 @@ function App() {
             }
           />
           <Route
-            path="/edit-alumni/:id"
+            path="/alumni/edit/:id"
             element={
               <AdminRoute>
                 <EditAlumni />
               </AdminRoute>
-            }
-          />
-          <Route
-            path="/alumni/view/:id"
-            element={
-              <ProtectedRoute>
-                <ViewAlumni />
-              </ProtectedRoute>
             }
           />
           <Route
@@ -93,6 +87,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminUsers />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/alumni"
+            element={
+              <AdminRoute>
+                <AdminAlumni />
               </AdminRoute>
             }
           />

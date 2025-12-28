@@ -10,6 +10,8 @@ import Dashboard from "../pages/Dashboard";
 import AlumniList from "../pages/AlumniList";
 import AddAlumni from "../pages/AddAlumni";
 import EditAlumni from "../pages/EditAlumni";
+import AdminUsers from "../pages/AdminUsers";
+import AdminAlumni from "../pages/AdminAlumni";
 
 const AppRoutes = () => {
   const { user } = useContext(AuthContext);
@@ -58,6 +60,22 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <EditAlumni />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <PrivateRoute>
+              <AdminUsers />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/alumni"
+          element={
+            <PrivateRoute>
+              <AdminAlumni />
             </PrivateRoute>
           }
         />

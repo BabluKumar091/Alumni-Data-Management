@@ -32,10 +32,16 @@ const Navbar = () => {
                 {user.role === "admin" && (
                   <>
                     <Link
-                      to="/add-alumni"
+                      to="/alumni/add"
                       className="hidden sm:inline-block hover:text-gray-200"
                     >
                       Add Alumni
+                    </Link>
+                    <Link
+                      to="/admin/alumni"
+                      className="hidden sm:inline-block hover:text-gray-200"
+                    >
+                      Manage Alumni
                     </Link>
                     <Link
                       to="/admin/users"
@@ -124,8 +130,11 @@ const Navbar = () => {
                 </Link>
                 {user.role === "admin" && (
                   <>
-                    <Link to="/add-alumni" className="block px-3 py-2 rounded hover:bg-blue-700">
+                    <Link to="/alumni/add" className="block px-3 py-2 rounded hover:bg-blue-700">
                       Add Alumni
+                    </Link>
+                    <Link to="/admin/alumni" className="block px-3 py-2 rounded hover:bg-blue-700">
+                      Manage Alumni
                     </Link>
                     <Link to="/admin/users" className="block px-3 py-2 rounded hover:bg-blue-700">
                       Manage Users

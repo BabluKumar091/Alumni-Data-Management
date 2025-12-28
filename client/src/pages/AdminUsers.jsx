@@ -1,10 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { getUsers, updateUserRole, deleteUser } from '../api/userApi';
+import { useFlashMessage } from '../context/FlashMessageContext';
+import { AuthContext } from '../context/AuthContext';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { showSuccess, showError } = useFlashMessage();
+  const { user } = useContext(AuthContext);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      showError('Access denied. Admin privileges required.');
+      // This will be handled by the PrivateRoute, but adding extra check
+    }
+  }, [user, showError]);
+
+  // Don't render if not admin
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
 
   const fetchUsers = async () => {
     setError('');
@@ -27,9 +44,10 @@ const AdminUsers = () => {
     try {
       const token = localStorage.getItem('token');
       await updateUserRole(id, role, token);
+      showSuccess(`User role changed to ${role} successfully!`);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to change role');
+      showError(err.response?.data?.message || 'Failed to change role');
     }
   };
 
@@ -38,9 +56,10 @@ const AdminUsers = () => {
     try {
       const token = localStorage.getItem('token');
       await deleteUser(id, token);
+      showSuccess('User deleted successfully!');
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete user');
+      showError(err.response?.data?.message || 'Failed to delete user');
     }
   };
 

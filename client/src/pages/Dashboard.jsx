@@ -30,7 +30,7 @@ const Dashboard = () => {
           </Link>
           {user && user.role === 'admin' && (
             <Link
-              to="/add-alumni"
+              to="/alumni/add"
               className="bg-white p-6 rounded shadow hover:shadow-lg transition text-center"
             >
               <h2 className="text-xl font-bold mb-2">Add Alumni</h2>

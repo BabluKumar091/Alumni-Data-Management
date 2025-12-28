@@ -22,8 +22,9 @@ exports.register = async (req, res) => {
     const existing = await User.findOne({ email: email.toLowerCase().trim() });
     if (existing) return res.status(409).json({ message: 'User already exists with that email' });
 
-    // Use role from request (default to 'student' if not provided)
-    const roleToAssign = role && ['admin', 'student'].includes(role.toLowerCase()) ? role.toLowerCase() : 'student';
+    // Check if this is the first user (make them admin)
+    const userCount = await User.countDocuments();
+    const roleToAssign = userCount === 0 ? 'admin' : (role && ['admin', 'student'].includes(role.toLowerCase()) ? role.toLowerCase() : 'student');
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);

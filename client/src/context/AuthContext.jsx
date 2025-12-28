@@ -1,10 +1,12 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { loginUser, registerUser } from "../api/userApi";
+import { useFlashMessage } from "./FlashMessageContext";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const { showSuccess, showError } = useFlashMessage();
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -21,10 +23,12 @@ export const AuthProvider = ({ children }) => {
       setUser(user); // store only user data in state
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+      showSuccess("Login successful! Welcome back.");
       return true; // successful login
     } catch (err) {
       console.error(err.response?.data || err);
-      alert(err.response?.data?.message || "Login failed");
+      const errorMessage = err.response?.data?.message || "Login failed";
+      showError(errorMessage);
       return false; // login failed
     }
   };
@@ -38,11 +42,12 @@ export const AuthProvider = ({ children }) => {
       setUser(user); // store only user data in state
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+      showSuccess("Registration successful! Welcome to JIET Alumni Network.");
       return true; // successful registration
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Registration failed";
       console.error("Registration error:", errorMessage);
-      alert(errorMessage);
+      showError(errorMessage);
       throw new Error(errorMessage); // throw error so component can catch it
     }
   };
@@ -51,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    showSuccess("Logged out successfully. See you soon!");
   };
 
   return (
