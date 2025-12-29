@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 const userRoutes = require('./routes/userRoutes');
@@ -20,6 +21,14 @@ app.use('/api/alumni', alumniRoutes);
 
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// Catch all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+});
 
 
 app.use((err, req, res, next) => {
