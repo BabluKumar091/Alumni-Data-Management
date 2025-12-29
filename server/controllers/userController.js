@@ -50,7 +50,17 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const match = await bcrypt.compare(password, user.password);
+    let match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      // Check if password is plain text (for migration)
+      if (password === user.password) {
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        await user.save();
+        match = true;
+      }
+    }
     if (!match) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = generateToken(user._id);
