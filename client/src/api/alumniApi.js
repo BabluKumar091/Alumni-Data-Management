@@ -2,6 +2,7 @@ import axios from "axios";
 
 const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`; // Backend API URL from environment
 
+console.log(BASE_URL)
 // Get all alumni
 export const getAlumni = async () => {
   try {
@@ -62,3 +63,5 @@ export const deleteAlumni = async (id, token) => {
     throw error;
   }
 };
+
+console.log("Backend URL:", BASE_URL);
